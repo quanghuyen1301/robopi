@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	while (1) {
 		n = recvfrom(sock, buf, 1024, 0, (struct sockaddr *) &from, &fromlen);
 		buf[n] = '\0';
-		printf("Msg recvfrom-->%s\n", cmd);
+		printf("Msg recvfrom-->%s\n",buf);
 		__control(buf[0]);
 
 #if 0

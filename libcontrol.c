@@ -82,7 +82,6 @@ void __control(char key) {
 		__stop();
 	else if (key == 'e') {
 		__stop();
-		break;
 	}
 }
 int __main(void) {
