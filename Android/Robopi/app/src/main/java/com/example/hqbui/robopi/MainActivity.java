@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -13,10 +14,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
 import java.net.* ;
+import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity {
     private final static int PACKETSIZE = 100;
-    public final static String ServerIP = "192.168.1.45";
+    public  static String ServerIP = "127.0.0.1";
     public final static String PortNum = "8888";
     public static String Msg = "up";
     private final static String ControlUp = "up";
@@ -24,8 +26,9 @@ public class MainActivity extends AppCompatActivity {
     private final static String ControlLeft = "f";
     private final static String ControlRigth = "r";
     private final static String ControlStop = "s";
-
+    private final static String TAG = "RoboPi";
     private GestureDetector GD;
+    public TextView text;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -36,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        text=(TextView)findViewById(R.id.textView);
+        text.setText(ServerIP);
 //
 //        __ControlPi(ServerIP, PortNum, ControlUp);
 //
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-
+        getWifiApIpAddress();
         GD = new GestureDetector(this, SOGL);
        // __ControlPi(ServerIP, PortNum, ControlStop);
 
@@ -53,6 +57,71 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+    public void SetText()
+    {
+        text.setText(ServerIP);
+    }
+
+    public String getWifiApIpAddress() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+
+                try {
+                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en
+                            .hasMoreElements(); ) {
+                        NetworkInterface intf = en.nextElement();
+                        //if (intf.getName().contains("wlan"))
+                        {
+                            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
+                                    .hasMoreElements(); ) {
+                                InetAddress inetAddress = enumIpAddr.nextElement();
+                                if (!inetAddress.isLoopbackAddress()
+                                        && (inetAddress.getAddress().length == 4)) {
+                                    Log.e(TAG, inetAddress.getHostAddress());
+
+
+                                    byte[] ip = inetAddress.getAddress();
+
+                                    for (int i = 2; i <= 254; i++) {
+                                        try {
+                                            ip[3] = (byte) i;
+                                            InetAddress address = InetAddress.getByAddress(ip);
+                                            String output = address.toString().substring(1);
+                                            if (address.isReachable(10)) {
+
+                                                Log.e(TAG, output + " is on the network");
+                                                ServerIP = output;
+                                                text.post(new Runnable() {
+                                                    public void run() {
+                                                        text.setText(ServerIP);
+                                                    }
+                                                });
+                                            } else{
+                                                //Log.e(TAG, output + " is Not the network");
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                  //  return inetAddress.getHostAddress();
+                                }
+                            }
+                        }
+                    }
+                } catch (SocketException ex) {
+                    Log.e(TAG, ex.toString());
+                }
+
+            }
+            }).start();
+
+        return null;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         GD.onTouchEvent(event);
