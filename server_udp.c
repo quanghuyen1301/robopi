@@ -10,6 +10,8 @@
 #include <string.h>
 #include <netdb.h>
 #include <stdio.h>
+#include "lib.h"
+#include "libcontrol.c"
 #define CONFIG_PORT "8888"
 void error(const char *msg) {
 	perror(msg);
@@ -38,16 +40,8 @@ int main(int argc, char *argv[]) {
 		n = recvfrom(sock, buf, 1024, 0, (struct sockaddr *) &from, &fromlen);
 		buf[n] = '\0';
 		printf("Msg recvfrom-->%s\n", cmd);
-#if 0
-		FILE *fp = popen(cmd, "r");
-		char line[256];
-		while (fgets(line, sizeof(line), fp)) {
-			printf("%s", line);
-			n = sendto(sock, line, strlen(line), 0, (struct sockaddr *) &from, fromlen);
-			if (n < 0)
-				error("sendto");
-		}
-#endif
+		__control(buf[0]);
+
 #if 0
 		char done[100];
 		sprintf(done, "Done");
