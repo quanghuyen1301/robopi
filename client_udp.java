@@ -44,7 +44,7 @@ public class client_udp
          socket = new DatagramSocket() ;
 
          // Construct the datagram packet
-         byte [] data = "Hello Server".getBytes() ;
+         byte [] data = "up".getBytes() ;
          DatagramPacket packet = new DatagramPacket( data, data.length, host, port ) ;
 
          // Send it
