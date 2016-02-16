@@ -24,6 +24,8 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in server;
 	struct sockaddr_in from;
 	char buf[1024];
+	
+	__gpioconfig();
 
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock < 0)
@@ -39,7 +41,7 @@ int main(int argc, char *argv[]) {
 	while (1) {
 		n = recvfrom(sock, buf, 1024, 0, (struct sockaddr *) &from, &fromlen);
 		buf[n] = '\0';
-		printf("Msg recvfrom-->%s\n",buf);
+		printf("Msg recvfrom-->%c\n",buf[0]);
 		__control(buf[0]);
 
 #if 0

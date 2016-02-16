@@ -12,6 +12,7 @@
 
 #define GPIO_MOTO_UP_2 1 //LEFT
 #define GPIO_MOTO_DOWN_2 3
+#define debug(arg...)  printf(arg)
 void __configOutput()
 
 {
@@ -70,6 +71,7 @@ void __getkey() {
 	}
 }
 void __control(char key) {
+	debug("%s %c\n",__func__,key);
 	if (key == 'u')
 		__up();
 	else if (key == 'd')
@@ -84,7 +86,7 @@ void __control(char key) {
 		__stop();
 	}
 }
-int __main(void) {
+int __gpioconfig(void) {
 	printf("Raspberry Pi blink\n");
 
 	if (wiringPiSetup() == -1)
@@ -92,6 +94,6 @@ int __main(void) {
 
 	__configOutput();
 
-	__getkey();
+//	__getkey();
 	return 0;
 }
