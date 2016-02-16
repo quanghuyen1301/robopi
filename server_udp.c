@@ -10,7 +10,7 @@
 #include <string.h>
 #include <netdb.h>
 #include <stdio.h>
-
+#define CONFIG_PORT "8888"
 void error(const char *msg) {
 	perror(msg);
 	exit(0);
@@ -23,11 +23,6 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in from;
 	char buf[1024];
 
-//	if (argc < 2) {
-//		fprintf(stderr, "ERROR, no port provided\n");
-//		exit(0);
-//	}
-
 	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock < 0)
 		error("Opening socket");
@@ -35,19 +30,14 @@ int main(int argc, char *argv[]) {
 	bzero(&server, length);
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_port = htons(atoi("8888"));
+	server.sin_port = htons(atoi(CONFIG_PORT));
 	if (bind(sock, (struct sockaddr *) &server, length) < 0)
 		error("binding");
 	fromlen = sizeof(struct sockaddr_in);
 	while (1) {
 		n = recvfrom(sock, buf, 1024, 0, (struct sockaddr *) &from, &fromlen);
-		if (n < 0)
-			error("recvfrom");
 		buf[n] = '\0';
-
-		char cmd[100];
-		strncpy(cmd, buf, n);
-		printf("xDiag# %s\n", cmd);
+		printf("Msg recvfrom-->%s\n", cmd);
 #if 0
 		FILE *fp = popen(cmd, "r");
 		char line[256];
@@ -58,10 +48,11 @@ int main(int argc, char *argv[]) {
 				error("sendto");
 		}
 #endif
+#if 0
 		char done[100];
 		sprintf(done, "Done");
-		n = sendto(sock, done, strlen(done), 0, (struct sockaddr *) &from, fromlen);
-//		fclose(fp);
+		sendto(sock, done, strlen(done), 0, (struct sockaddr *) &from, fromlen);
+#endif
 	}
 	return 0;
 }
