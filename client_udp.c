@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 		do {
 			n = recvfrom(sock, buffer, 256, 0, (struct sockaddr *) &from, &length);
 			buffer[n] = '\0';
-			printf("%s\n", buffer);
+			printf("--->%s\n", buffer);
 			if (strcmp(buffer, "Done") == 0)
 				break;
 		} while (1);
