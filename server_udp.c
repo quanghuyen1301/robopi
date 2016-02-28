@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 		printf("Msg recvfrom-->%c\n",buf[0]);
 		__control(buf[0]);
 
-#if 0
+#if 1
 		char done[100];
 		sprintf(done, "Done");
 		sendto(sock, done, strlen(done), 0, (struct sockaddr *) &from, fromlen);
